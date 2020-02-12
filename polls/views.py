@@ -86,3 +86,25 @@ def question(request):
             return create_response(result)
         except Exception as e:
             return error_response(e)
+    elif request.method == 'DELETE':
+        schema = {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+                "question_id": {
+                    "type": "string",
+                    "pattern": "[1-9][0-9]*"
+                }
+            },
+            "required": [
+                "question_id",
+            ]
+        }
+
+        body = request.GET
+        try:
+            validate(json.loads(json.dumps(body)), schema)
+            result = impls.delete_question(question_id=int(body.get('question_id')))
+            return create_response(result)
+        except Exception as e:
+            return error_response(e)

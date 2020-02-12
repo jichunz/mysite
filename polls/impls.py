@@ -26,3 +26,9 @@ def update_question(question_id, question_text):
     question.pub_date = datetime.now()
     question.save()
     return dict(id=question.id, question_text=question.question_text, pub_date=question.pub_date)
+
+
+def delete_question(question_id):
+    question = Question.objects.get(id=question_id)
+    question.delete()
+    return dict(id=question_id)
