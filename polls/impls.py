@@ -18,3 +18,11 @@ def get_question(question_id):
 def create_question(question_text):
     question = Question.objects.create(question_text=question_text, pub_date=datetime.now())
     return dict(id=question.id, question_text=question_text, pub_date=question.pub_date)
+
+
+def update_question(question_id, question_text):
+    question = Question.objects.get(id=question_id)
+    question.question_text = question_text
+    question.pub_date = datetime.now()
+    question.save()
+    return dict(id=question.id, question_text=question.question_text, pub_date=question.pub_date)

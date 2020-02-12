@@ -60,3 +60,29 @@ def question(request):
             return create_response(result)
         except Exception as e:
             return error_response(e)
+    elif request.method == 'PUT':
+        schema = {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "type": "object",
+            "properties": {
+                "question_id": {
+                    "type": "integer"
+                },
+                "question_text": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "question_id",
+                "question_text",
+            ]
+        }
+
+        body = json.loads(request.body)
+        try:
+            validate(body, schema)
+            result = impls.update_question(question_id=body.get('question_id'),
+                                           question_text=body.get('question_text'))
+            return create_response(result)
+        except Exception as e:
+            return error_response(e)
