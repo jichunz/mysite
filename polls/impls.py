@@ -4,15 +4,45 @@ from .models import Question, Choice
 
 
 def get_questions():
-    questions = Question.objects.all()
-    return dict(questions=[dict(id=q.id,
-                                question_text=q.question_text,
-                                pub_date=q.pub_date) for q in questions])
+    rows = Question.objects.all().values('id',
+                                         'question_text',
+                                         'pub_date',
+                                         'choice__id',
+                                         'choice__choice_text',
+                                         'choice__votes')
+    result = dict()
+    for row in rows:
+        question_id = row.get('id')
+        question = result.get(question_id)
+        if not question:
+            question = dict(question_id=question_id, question_text=row.get('question_text'),
+                            question_pub_date=row.get('pub_date'))
+            result[question_id] = question
+        choices = question.get('choices')
+        if not choices:
+            choices = list()
+            question['choices'] = choices
+        choices.append(dict(choice_id=row.get('choice__id'), choice_text=row.get('choice__choice_text'),
+                            votes=row.get('choice__votes')))
+    return dict(questions=list(result.values()))
 
 
 def get_question(question_id):
-    question = Question.objects.get(id=question_id)
-    return dict(id=question.id, question_text=question.question_text, pub_date=question.pub_date)
+    rows = Question.objects.filter(id=question_id).values('id',
+                                                          'question_text',
+                                                          'pub_date',
+                                                          'choice__id',
+                                                          'choice__choice_text',
+                                                          'choice__votes')
+    choices = list()
+    for row in rows:
+        question_text = row.get('question_text')
+        pub_date = row.get('pub_date')
+        choice_id = row.get('choice__id')
+        if choice_id:
+            choices.append(dict(choice_id=choice_id, choice_text=row.get('choice__choice_text'),
+                                votes=row.get('choice__votes')))
+    return dict(question_id=question_id, question_text=question_text, pub_date=pub_date, choices=choices)
 
 
 def create_question(question_text):
