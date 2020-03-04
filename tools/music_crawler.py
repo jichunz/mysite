@@ -4,6 +4,7 @@ from urllib.request import urlopen
 
 import requests
 
+from tools.chinese_converter import ChineseConverter
 from tools.music_parser import SongListParser, SongPageParser
 
 
@@ -13,8 +14,11 @@ def crawl_songs(url):
     song_list_parser = SongListParser()
     song_list_parser.feed(response.text)
     download_folder = '/Users/james/Downloads/Hymns/'
+    chinese_converter = ChineseConverter('/Users/james/Downloads/traditional_chinese.txt',
+                                         '/Users/james/Downloads/simplified_chinese.txt')
     for (number, title, song_page_url) in zip(song_list_parser.number_list, song_list_parser.title_list,
                                               song_list_parser.url_list):
+        title = chinese_converter.to_traditional(title)
         print(number + '-' + title + ': ' + song_page_url)
         song_page_url = urlunsplit([url_split_result[0], url_split_result[1], song_page_url, '', ''])
         response = requests.get(song_page_url)
