@@ -1,7 +1,7 @@
 from html.parser import HTMLParser
 
 
-class SongListingParser(HTMLParser):
+class SongListParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
         self.started_song_list_header = False
@@ -52,3 +52,31 @@ class SongListingParser(HTMLParser):
                 self.started_song_list = False
                 print('Running int </ul>! Ending song list!')
                 self.started_song_list = False
+
+
+class SongPageParser(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.song_image_urls = list()
+        self.started_img_tab = False
+        self.processing_img_ref = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'div':
+            for name, value in attrs:
+                if name == 'class' and value == 'img_tab':
+                    self.started_img_tab = True
+        elif tag == 'a':
+            if self.started_img_tab:
+                self.processing_img_ref = True
+                for name, value in attrs:
+                    if name == 'href':
+                        self.song_image_urls.append(value)
+
+    def handle_endtag(self, tag):
+        if tag == 'div':
+            if self.started_img_tab:
+                self.started_img_tab = False
+        elif tag == 'a':
+            if self.processing_img_ref:
+                self.processing_img_ref = False
