@@ -14,8 +14,8 @@ def crawl_songs(url):
     song_list_parser = SongListParser()
     song_list_parser.feed(response.text)
     download_folder = '/Users/james/Downloads/Hymns/'
-    chinese_converter = ChineseConverter('/Users/james/Downloads/traditional_chinese.txt',
-                                         '/Users/james/Downloads/simplified_chinese.txt')
+    chinese_converter = ChineseConverter('resources/traditional_chinese.txt',
+                                         'resources/simplified_chinese.txt')
     for (number, title, song_page_url) in zip(song_list_parser.number_list, song_list_parser.title_list,
                                               song_list_parser.url_list):
         title = chinese_converter.to_traditional(title)
