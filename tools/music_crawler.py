@@ -15,10 +15,10 @@ def crawl_songs(url):
     response = requests.get(url)
     song_list_parser = SongListParser()
     song_list_parser.feed(response.text)
-    png_folder = '/Users/james/Downloads/Hymns/PNG'
+    png_folder = 'Output/Hymns/PNG'
     if not os.path.exists(png_folder):
         os.makedirs(png_folder)
-    pdf_folder = '/Users/james/Downloads/Hymns/PDF'
+    pdf_folder = 'Output/Hymns/PDF'
     if not os.path.exists(pdf_folder):
         os.makedirs(pdf_folder)
     chinese_converter = ChineseConverter('resources/traditional_chinese.txt',
@@ -51,9 +51,4 @@ def grab_song(pdf_folder, png_folder, number, title, song_page_url):
 
 
 if __name__ == '__main__':
-    import sys
-
-    if sys.argv is None or len(sys.argv) < 2:
-        print('Usage: python music_crawler.py <URL>')
-    else:
-        crawl_songs(sys.argv[1])
+    crawl_songs('https://www.zanmeishi.com/songbook/hymns-for-gods-people.html')
