@@ -80,3 +80,58 @@ class SongPageParser(HTMLParser):
         elif tag == 'a':
             if self.processing_img_ref:
                 self.processing_img_ref = False
+
+
+class MidiPageParser(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.table_index = -1
+        self.started_song_list = False
+        self.row_index = -1
+        self.started_song = False
+        self.column_index = -1
+        self.song_index = 0
+        self.song_title = None
+        self.song_url = None
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'table':
+            self.table_index += 1
+            if self.table_index == 2:
+                self.started_song_list = True
+        elif tag == 'tr':
+            if self.started_song_list:
+                self.row_index += 1
+                if self.row_index > 0:
+                    self.started_song = True
+        elif tag == 'td':
+            if self.started_song:
+                self.column_index += 1
+        elif tag == 'a':
+            if self.started_song:
+                if self.column_index == 2:
+                    for name, value in attrs:
+                        if name == 'href':
+                            self.song_url = value
+                            print('On row ' + str(self.row_index) + ' found song ' + self.song_url)
+
+    def handle_endtag(self, tag):
+        if tag == 'table':
+            if self.started_song_list:
+                self.started_song_list = False
+        elif tag == 'tr':
+            if self.started_song:
+                # TODO Download the midi
+
+                self.started_song = False
+                self.column_index = -1
+                self.song_index = 0
+                self.song_title = None
+                self.song_url = None
+
+    def handle_data(self, data):
+        if self.started_song:
+            if self.column_index == 0:
+                # TODO Read song index and song title
+                self.song_index = data.decode('unicode-escape')
+                print('On row ' + str(self.row_index) + ' found song index ' + self.song_index)
