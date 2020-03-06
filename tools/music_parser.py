@@ -1,4 +1,7 @@
+import os
+import shutil
 from html.parser import HTMLParser
+from urllib.request import urlopen
 
 
 class SongListParser(HTMLParser):
@@ -90,7 +93,6 @@ class MidiPageParser(HTMLParser):
         self.row_index = -1
         self.started_song = False
         self.column_index = -1
-        self.song_index = 0
         self.song_title = None
         self.song_url = None
 
@@ -111,9 +113,8 @@ class MidiPageParser(HTMLParser):
             if self.started_song:
                 if self.column_index == 2:
                     for name, value in attrs:
-                        if name == 'href':
+                        if name == 'href' and value[-4:] == '.mid':
                             self.song_url = value
-                            print('On row ' + str(self.row_index) + ' found song ' + self.song_url)
 
     def handle_endtag(self, tag):
         if tag == 'table':
@@ -121,17 +122,26 @@ class MidiPageParser(HTMLParser):
                 self.started_song_list = False
         elif tag == 'tr':
             if self.started_song:
-                # TODO Download the midi
+                # Download the midi file
+                print('On row ' + str(self.row_index) + ' found song with title "' + self.song_title +
+                      '" and URL "' + self.song_url + '".')
+                self.download_midi('http://www.christianstudy.com', self.song_title, self.song_url, 'Output/Hymns/MIDI')
 
                 self.started_song = False
                 self.column_index = -1
-                self.song_index = 0
                 self.song_title = None
                 self.song_url = None
 
     def handle_data(self, data):
+        data = data.strip()
         if self.started_song:
-            if self.column_index == 0:
-                # TODO Read song index and song title
-                self.song_index = data.decode('unicode-escape')
-                print('On row ' + str(self.row_index) + ' found song index ' + self.song_index)
+            if self.column_index == 0 and data:
+                self.song_title = data if not self.song_title else self.song_title + data
+
+    def download_midi(self, base_url, song_title, song_url, output_folder):
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+        full_song_url = base_url + song_url
+        song_file_name = os.path.join(output_folder, song_title + '.midi')
+        with urlopen(full_song_url) as song_midi_response, open(song_file_name, 'wb') as out_file:
+            shutil.copyfileobj(song_midi_response, out_file)
