@@ -10,7 +10,7 @@ def convert_section_name_map(section_name_map_file):
         for line in lines:
             sub_strings = line.split('\t')
             if len(sub_strings) > 4:
-                csv_writer.writerow([sub_strings[0], sub_strings[1], sub_strings[2], sub_strings[4].strip()])
+                csv_writer.writerow([sub_strings[0], sub_strings[1], sub_strings[2], sub_strings[4]])
 
 
 if __name__ == '__main__':
