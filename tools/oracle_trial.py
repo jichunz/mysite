@@ -11,6 +11,7 @@ def test_oracle(url, username, password, p_name, p_value):
     result_set = cursor.fetchall()
     for row in result_set:
         print('param_name = {0}, param_value = {1}'.format(row[0], row[1]))
+
     cursor.close()
     connection.close()
     print('Trying to insert param name "{0}" with param value "{1}".'.format(p_name, p_value))
