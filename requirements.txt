@@ -1,6 +1,6 @@
 cx_oracle==7.3.0
-Django==3.1.1
+Django==3.1.2
 jsonschema==3.2.0
 mysqlclient==2.0.1
-Pillow==7.2.0
+Pillow==8.0.1
 requests==2.24.0
