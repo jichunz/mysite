@@ -3,7 +3,8 @@ import json
 
 csv_content = "state,timestamp,votes,eevp,trumpd,bidenj\r\n"
 
-# read json files
+# read json files downloaded from https://static01.nyt.com/elections-assets/2020/data/api/2020-11-03/race-page/pennsylvania/president.json
+# Note problem when total count is 2,984,468
 for file in glob.glob("Input/*.json"):
     with open(file, encoding="utf8") as f:
         x = json.load(f)
